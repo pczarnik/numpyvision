@@ -1,20 +1,19 @@
 """
 numpyvision
-======
+===========
 
-Provides an easy access to MNIST-like datasets in a numpy format:
+numpyvision is a drop-in replacement for torchvision.datasets with an easy access
+to MNIST-like datasets in a numpy format:
   1. MNIST
   2. FashionMNIST, FMNIST
   3. KMNIST, KuzushijiMNIST
-  4. EMNIST - divided into Balanced, ByClass, ByMerge, Digits and Letters
-     subsets
+  4. EMNIST - splitted into balanced, byclass, bymerge, digits, letters
+    and mnist
   5. Kuzushiji49, K49
 
-Every dataset contains four numpy arrays:
-  1. ``train_images`` of size ``(n_train_samples, width, height)``
-  1. ``train_labels`` of size ``(n_train_samples,)``
-  1. ``test_images`` of size ``(n_test_samples, width, height)``
-  1. ``test_labels`` of size ``(n_test_samples,)``
+Every train or test split of datasets contains two numpy arrays:
+  1. ``data`` of size ``(n_train_samples, width, height)``
+  2. ``targets`` of size ``(n_train_samples,)``
 
 All arrays are of type ``uint8``.
 
@@ -23,22 +22,18 @@ Example usage
 
   >>> from numpyvision.datasets import MNIST
   >>> mnist = MNIST()
-  >>> type(mnist.train_images())
+  >>> type(mnist.data)
   <class 'numpy.ndarray'>
-  >>> mnist.train_images().dtype
+  >>> mnist.data.dtype
   dtype('uint8')
-  >>> mnist.train_images().min()
+  >>> mnist.data.min()
   0
-  >>> mnist.train_images().max()
+  >>> mnist.data.max()
   255
-  >>> mnist.train_images().shape
+  >>> mnist.data.shape
   (60000, 28, 28)
-  >>> mnist.train_labels().shape
+  >>> mnist.targets.shape
   (60000,)
-  >>> mnist.test_images().shape
-  (10000, 28, 28)
-  >>> mnist.test_labels().shape
-  (10000,)
 
 """
 

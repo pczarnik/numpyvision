@@ -1,6 +1,6 @@
 # numpyvision: Vision datasets as numpy arrays
 
-numpyvision provides an easy way to use vision datasets like MNIST and other MNIST-like datasets (FashionMNIST, KMNIST, EMNIST) in your numpy code.
+numpyvision is a drop-in replacement for torchvision.datasets with an easy access to MNIST and other MNIST-like datasets (FashionMNIST, KMNIST, EMNIST) in your numpy code.
 
 numpyvision replicates the functionality of `torchvision.datasets.mnist` without the need to download dozens of dependencies - numpyvision has only one dependency: `numpy`.
 
@@ -12,23 +12,19 @@ Each dataset stores train/test images as numpy arrays of shape `(n_samples, img_
 MNIST example:
 ```python
 >>> from numpyvision.datasets import MNIST
->>> mnist = MNIST()
->>> type(mnist.train_images())
+>>> mnist = MNIST(train=True)
+>>> type(mnist.data)
 <class 'numpy.ndarray'>
->>> mnist.train_images().dtype
+>>> mnist.data.dtype
 dtype('uint8')
->>> mnist.train_images().min()
+>>> mnist.data.min()
 0
->>> mnist.train_images().max()
+>>> mnist.data.max()
 255
->>> mnist.train_images().shape
+>>> mnist.data.shape
 (60000, 28, 28)
->>> mnist.train_labels().shape
+>>> mnist.targets.shape
 (60000,)
->>> mnist.test_images().shape
-(10000, 28, 28)
->>> mnist.test_labels().shape
-(10000,)
 >>> mnist.classes[:3]
 ['0 - zero', '1 - one', '2 - two']
 ```
@@ -39,8 +35,9 @@ from numpyvision.datasets import FashionMNIST
 import matplotlib.pyplot as plt
 
 fmnist = FashionMNIST()
-plt.imshow(fmnist.train_images()[0], cmap='gray')
-plt.title(fmnist.classes[fmnist.train_labels()[0]])
+img, label = fmnist[0]
+plt.imshow(img, cmap='gray')
+plt.title(fmnist.classes[label])
 plt.axis('off')
 plt.show()
 ```
@@ -51,10 +48,9 @@ EMNIST example
 from numpyvision.datasets import EMNIST
 import matplotlib.pyplot as plt
 
-emnist = EMNIST()
-letters = emnist.Letters()
+letters = EMNIST('letters')
 plt.imshow(
-    letters.train_images()[:256]
+    letters.data[:256]
         .reshape(16, 16, 28, 28)
         .swapaxes(1, 2)
         .reshape(16 * 28, -1),
