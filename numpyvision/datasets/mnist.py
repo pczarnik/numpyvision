@@ -675,7 +675,9 @@ class EMNIST(MNIST):
 
     def _load_data(self) -> Tuple[np.ndarray, np.ndarray]:
         self._unzip_split()
-        return super()._load_data()
+        data, targets = super()._load_data()
+        data = np.moveaxis(data, -2, -1)
+        return data, targets
 
     def _filename_with_md5(self, key: str) -> Tuple[str, str]:
         return self.split_resources[self.split][key]
