@@ -1,5 +1,5 @@
-from ._emnist import EMNIST
-from ._mnist import K49, KMNIST, MNIST, FashionMNIST
+# from ._emnist import EMNIST
+from .mnist import K49, KMNIST, MNIST, FashionMNIST
 
 FMNIST = FashionMNIST
 KuzushijiMNIST = KMNIST

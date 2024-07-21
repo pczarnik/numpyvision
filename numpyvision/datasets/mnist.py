@@ -1,42 +1,50 @@
-from .dataset import IdxDataset, NpzDataset
+import os
+import tempfile
+from typing import Dict, Optional, Tuple
+
+import numpy as np
+
+from .utils import check_file_integrity, download_file, read_idx_file
+
+TEMPORARY_DIR = os.path.join(tempfile.gettempdir(), "numpyvision")
 
 
-class MNIST(IdxDataset):
+class MNIST:
     """
     MNIST Dataset
     http://yann.lecun.com/exdb/mnist
 
     Attributes
     ----------
-    target_dir : str
+    train : bool, default=True
+        If True, uses train split, otherwise uses test split.
+    data : np.ndarray
+        numpy array containing images from chosen split.
+    targets : np.ndarray
+        numpy array containing labels from chosen split.
+    root : str
         Directory where all files exist or will be downloaded.
     classes : list[str]
         Class names.
-    mirrors : list[str]
-        List of urls where dataset is hosted.
-    resources : dict[str, tuple[str, str]]
-       Dictionary of data files with filename and md5 hash.
+    class_to_idx : dict[str, int]
+        Mapping from class to indices
 
     Usage
     -----
     >>> from numpyvision.datasets import MNIST
-    >>> mnist = MNIST()
-    >>> type(mnist.train_images())
+    >>> mnist = MNIST(train=True)
+    >>> type(mnist.data)
     <class 'numpy.ndarray'>
-    >>> mnist.train_images().dtype
+    >>> mnistdata.dtype
     dtype('uint8')
-    >>> mnist.train_images().min()
+    >>> mnist.data.min()
     0
-    >>> mnist.train_images().max()
+    >>> mnist.data.max()
     255
-    >>> mnist.train_images().shape
+    >>> mnist.data.shape
     (60000, 28, 28)
-    >>> mnist.train_labels().shape
+    >>> mnist.targets.shape
     (60000,)
-    >>> mnist.test_images().shape
-    (10000, 28, 28)
-    >>> mnist.test_labels().shape
-    (10000,)
 
     Citation
     --------
@@ -90,22 +98,125 @@ class MNIST(IdxDataset):
         ),
     }
 
+    def __init__(
+        self,
+        root: Optional[str] = None,
+        train: bool = True,
+        download: bool = True,
+        verbose: bool = True,
+    ) -> None:
+        """
+        Parameters
+        ----------
+        root : str, default='/tmp/<dataset_name>/'
+            Directory where all files exist or will be downloaded to (if `download` is True).
+        train : bool, default=True
+            If True, uses train split, otherwise uses test split.
+        download : bool, default=True
+            If True and files don't exist in `root`, downloads all files to `root`.
+        load : bool, default=True
+            If True, loads data from files in `root`.
+        verbose : bool, default=True
+            If True, prints download logs.
+        """
 
-class FashionMNIST(IdxDataset):
+        self.train = train
+
+        self.root = (
+            os.path.join(TEMPORARY_DIR, type(self).__name__) if root is None else root
+        )
+
+        if download:
+            self.download(verbose=verbose)
+
+        self.data, self.targets = self._load_data()
+
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, int]:
+        """
+        Parameters
+        ----------
+        index : int
+
+        Returns
+        -------
+        image : np.ndarray
+        label : int
+        """
+
+        img = self.data[index]
+        target = int(self.targets[index])
+        return img, target
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    @property
+    def class_to_idx(self) -> Dict[str, int]:
+        return {_class: i for i, _class in enumerate(self.classes)}
+
+    def download(self, verbose: bool = True) -> None:
+        """
+        Download files from mirrors and save to `root`.
+
+        Parameters
+        ----------
+        force : bool=False
+            If True, downloads all files even if they exist.
+        verbose : bool, default=True
+            If True, prints download logs.
+        """
+
+        os.makedirs(self.root, exist_ok=True)
+
+        for filename, md5 in self.resources.values():
+            filepath = os.path.join(self.root, filename)
+
+            if check_file_integrity(filepath, md5):
+                continue
+
+            download_file(self.mirrors, filename, filepath, verbose)
+
+    def _load_data(self) -> Tuple[np.ndarray, np.ndarray]:
+        split = "train" if self.train else "test"
+
+        data = self._load_file(f"{split}_images")
+        targets = self._load_file(f"{split}_labels")
+
+        return data, targets
+
+    def _load_file(self, key: str) -> np.ndarray:
+        filename, md5 = self.resources[key]
+        filepath = os.path.join(self.root, filename)
+
+        if not check_file_integrity(filepath, md5):
+            raise RuntimeError(
+                f"Dataset '{key}' not found in '{filepath}' or MD5 "
+                "checksum is not valid. "
+                "Use download=True or .download() to download it"
+            )
+
+        return read_idx_file(filepath)
+
+
+class FashionMNIST(MNIST):
     """
     Fashion-MNIST Dataset
     https://github.com/zalandoresearch/fashion-mnist
 
     Attributes
     ----------
-    target_dir : str
+    train : bool, default=True
+        If True, uses train split, otherwise uses test split.
+    data : np.ndarray
+        numpy array containing images from chosen split.
+    targets : np.ndarray
+        numpy array containing labels from chosen split.
+    root : str
         Directory where all files exist or will be downloaded.
     classes : list[str]
         Class names.
-    mirrors : list[str]
-        List of urls where dataset is hosted.
-    resources : dict[str, tuple[str, str]]
-       Dictionary of data files with filename and md5 hash.
+    class_to_idx : dict[str, int]
+        Mapping from class to indices
 
     Usage
     -----
@@ -165,28 +276,25 @@ class FashionMNIST(IdxDataset):
     }
 
 
-class KMNIST(IdxDataset):
+class KMNIST(MNIST):
     """
     Kuzushiji-MNIST Dataset
     https://github.com/rois-codh/kmnist
 
     Attributes
     ----------
-    target_dir : str
+    train : bool, default=True
+        If True, uses train split, otherwise uses test split.
+    data : np.ndarray
+        numpy array containing images from chosen split.
+    targets : np.ndarray
+        numpy array containing labels from chosen split.
+    root : str
         Directory where all files exist or will be downloaded.
     classes : list[str]
         Class names.
-    mirrors : list[str]
-        List of urls where dataset is hosted.
-    resources : dict[str, tuple[str, str]]
-       Dictionary of data files with filename and md5 hash.
-
-    Usage
-    -----
-    >>> from numpyvision.datasets import KMNIST
-    >>> kmnist = KMNIST()
-    >>> kmnist.train_images().dtype
-    dtype('uint8')
+    class_to_idx : dict[str, int]
+        Mapping from class to indices
 
     Citation
     --------
@@ -239,28 +347,25 @@ class KMNIST(IdxDataset):
     }
 
 
-class K49(NpzDataset):
+class K49(MNIST):
     """
     Kuzushiji-49 Dataset
     https://github.com/rois-codh/kmnist
 
     Attributes
     ----------
-    target_dir : str
+    train : bool, default=True
+        If True, uses train split, otherwise uses test split.
+    data : np.ndarray
+        numpy array containing images from chosen split.
+    targets : np.ndarray
+        numpy array containing labels from chosen split.
+    root : str
         Directory where all files exist or will be downloaded.
     classes : list[str]
         Class names.
-    mirrors : list[str]
-        List of urls where dataset is hosted.
-    resources : dict[str, tuple[str, str]]
-       Dictionary of data files with filename and md5 hash.
-
-    Usage
-    -----
-    >>> from numpyvision.datasets import K49
-    >>> k49 = K49()
-    >>> k49.train_images().dtype
-    dtype('uint8')
+    class_to_idx : dict[str, int]
+        Mapping from class to indices
 
     Citation
     --------
@@ -350,3 +455,16 @@ class K49(NpzDataset):
             "4da6f7a62e67a832d5eb1bd85c5ee448",
         ),
     }
+
+    def _load_file(self, key: str) -> np.ndarray:
+        filename, md5 = self.resources[key]
+        filepath = os.path.join(self.root, filename)
+
+        if not check_file_integrity(filepath, md5):
+            raise RuntimeError(
+                f"Dataset '{key}' not found in '{filepath}' or MD5 "
+                "checksum is not valid. "
+                "Use download=True or .download() to download it"
+            )
+
+        return np.load(filepath)["arr_0"]
