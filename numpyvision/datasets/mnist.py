@@ -1,10 +1,10 @@
 import os
 import tempfile
-from typing import Dict, Optional, Tuple
-
+from typing import Dict, Optional, Tuple, Literal
+import string
 import numpy as np
 
-from .utils import check_file_integrity, download_file, read_idx_file
+from .utils import check_file_integrity, extract_from_zip, download_file, read_idx_file
 
 TEMPORARY_DIR = os.path.join(tempfile.gettempdir(), "numpyvision")
 
@@ -154,6 +154,9 @@ class MNIST:
     def class_to_idx(self) -> Dict[str, int]:
         return {_class: i for i, _class in enumerate(self.classes)}
 
+    def _filename_with_md5(self, key: str) -> Tuple[str, str]:
+        return self.resources[key]
+
     def download(self, verbose: bool = True) -> None:
         """
         Download files from mirrors and save to `root`.
@@ -185,7 +188,7 @@ class MNIST:
         return data, targets
 
     def _load_file(self, key: str) -> np.ndarray:
-        filename, md5 = self.resources[key]
+        filename, md5 = self._filename_with_md5(key)
         filepath = os.path.join(self.root, filename)
 
         if not check_file_integrity(filepath, md5):
@@ -468,3 +471,241 @@ class K49(MNIST):
             )
 
         return np.load(filepath)["arr_0"]
+
+
+class EMNIST(MNIST):
+    """
+    EMNIST Dataset
+    https://www.westernsydney.edu.au/bens/home/reproducible_research/emnist
+
+    Attributes
+    ----------
+    split : str
+        One of: "byclass", "bymerge", "balanced", "letters", "digits", "mnists"
+    train : bool, default=True
+        If True, uses train split, otherwise uses test split.
+    data : np.ndarray
+        numpy array containing images from chosen split.
+    targets : np.ndarray
+        numpy array containing labels from chosen split.
+    root : str
+        Directory where all files exist or will be downloaded.
+    classes : list[str]
+        Class names.
+    class_to_idx : dict[str, int]
+        Mapping from class to indices
+
+    Usage
+    -----
+    >>> from numpyvision.datasets import EMNIST
+    >>> emnist = EMNIST()
+    >>> letters = emnist.Letters()
+    >>> letters.train_images().dtype
+    dtype('uint8')
+
+    Citation
+    --------
+    @article{cohen2017emnist,
+      title={EMNIST: an extension of MNIST to handwritten letters},
+      author={Gregory Cohen and Saeed Afshar and Jonathan Tapson and André van Schaik},
+      year={2017},
+      eprint={1702.05373},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+    }
+    """
+
+    mirrors = [
+        "https://biometrics.nist.gov/cs_links/EMNIST/",
+    ]
+
+    resources = {"gzip": ("gzip.zip", "58c8d27c78d21e728a6bc7b3cc06412e")}
+    splits = ("byclass", "bymerge", "balanced", "letters", "digits", "mnist")
+    _merged_classes = {
+        "c",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "o",
+        "p",
+        "s",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+    }
+    _all_classes = set(string.digits + string.ascii_letters)
+    classes_split_dict = {
+        "byclass": sorted(list(_all_classes)),
+        "bymerge": sorted(list(_all_classes - _merged_classes)),
+        "balanced": sorted(list(_all_classes - _merged_classes)),
+        "letters": ["N/A"] + list(string.ascii_lowercase),
+        "digits": list(string.digits),
+        "mnist": list(string.digits),
+    }
+
+    split_resources = {
+        "byclass": {
+            "train_images": (
+                "emnist-byclass-train-images-idx3-ubyte.gz",
+                "712dda0bd6f00690f32236ae4325c377",
+            ),
+            "train_labels": (
+                "emnist-byclass-train-labels-idx1-ubyte.gz",
+                "ee299a3ee5faf5c31e9406763eae7e43",
+            ),
+            "test_images": (
+                "emnist-byclass-test-images-idx3-ubyte.gz",
+                "1435209e34070a9002867a9ab50160d7",
+            ),
+            "test_labels": (
+                "emnist-byclass-test-labels-idx1-ubyte.gz",
+                "7a0f934bd176c798ecba96b36fda6657",
+            ),
+        },
+        "bymerge": {
+            "train_images": (
+                "emnist-bymerge-train-images-idx3-ubyte.gz",
+                "4a792d4df261d7e1ba27979573bf53f3",
+            ),
+            "train_labels": (
+                "emnist-bymerge-train-labels-idx1-ubyte.gz",
+                "491be69ef99e1ab1f5b7f9ccc908bb26",
+            ),
+            "test_images": (
+                "emnist-bymerge-test-images-idx3-ubyte.gz",
+                "8eb5d34c91f1759a55831c37ec2a283f",
+            ),
+            "test_labels": (
+                "emnist-bymerge-test-labels-idx1-ubyte.gz",
+                "c13f4cd5211cdba1b8fa992dae2be992",
+            ),
+        },
+        "balanced": {
+            "train_images": (
+                "emnist-balanced-train-images-idx3-ubyte.gz",
+                "4041b0d6f15785d3fa35263901b5496b",
+            ),
+            "train_labels": (
+                "emnist-balanced-train-labels-idx1-ubyte.gz",
+                "7a35cc7b2b7ee7671eddf028570fbd20",
+            ),
+            "test_images": (
+                "emnist-balanced-test-images-idx3-ubyte.gz",
+                "6818d20fe2ce1880476f747bbc80b22b",
+            ),
+            "test_labels": (
+                "emnist-balanced-test-labels-idx1-ubyte.gz",
+                "acd3694070dcbf620e36670519d4b32f",
+            ),
+        },
+        "letters": {
+            "train_images": (
+                "emnist-letters-train-images-idx3-ubyte.gz",
+                "8795078f199c478165fe18db82625747",
+            ),
+            "train_labels": (
+                "emnist-letters-train-labels-idx1-ubyte.gz",
+                "c16de4f1848ddcdddd39ab65d2a7be52",
+            ),
+            "test_images": (
+                "emnist-letters-test-images-idx3-ubyte.gz",
+                "382093a19703f68edac6d01b8dfdfcad",
+            ),
+            "test_labels": (
+                "emnist-letters-test-labels-idx1-ubyte.gz",
+                "d4108920cd86601ec7689a97f2de7f59",
+            ),
+        },
+        "digits": {
+            "train_images": (
+                "emnist-digits-train-images-idx3-ubyte.gz",
+                "d2662ecdc47895a6bbfce25de9e9a677",
+            ),
+            "train_labels": (
+                "emnist-digits-train-labels-idx1-ubyte.gz",
+                "2223fcfee618ac9c89ef20b6e48bcf9e",
+            ),
+            "test_images": (
+                "emnist-digits-test-images-idx3-ubyte.gz",
+                "a159b8b3bd6ab4ed4793c1cb71a2f5cc",
+            ),
+            "test_labels": (
+                "emnist-digits-test-labels-idx1-ubyte.gz",
+                "8afde66ea51d865689083ba6bb779fac",
+            ),
+        },
+        "mnist": {
+            "train_images": (
+                "emnist-mnist-train-images-idx3-ubyte.gz",
+                "3663598a39195d030895b6304abb5065",
+            ),
+            "train_labels": (
+                "emnist-mnist-train-labels-idx1-ubyte.gz",
+                "6c092f03c9bb63e678f80f8bc605fe37",
+            ),
+            "test_images": (
+                "emnist-mnist-test-images-idx3-ubyte.gz",
+                "fb51b6430fc4dd67deaada1bf25d4524",
+            ),
+            "test_labels": (
+                "emnist-mnist-test-labels-idx1-ubyte.gz",
+                "ae7f6be798a9a5d5f2bd32e078a402dd",
+            ),
+        },
+    }
+
+    def __init__(
+        self,
+        split: Literal["byclass", "bymerge", "balanced", "letters", "digits", "mnists"],
+        **kwargs,
+    ) -> None:
+        if split not in self.splits:
+            raise RuntimeError(
+                f"Incorrect split {split}. Available splits: {self.splits}"
+            )
+        self.split = split
+
+        super().__init__(**kwargs)
+        self.classes = self.classes_split_dict[self.split]
+
+    def _load_data(self) -> Tuple[np.ndarray, np.ndarray]:
+        self._unzip_split()
+        return super()._load_data()
+
+    def _filename_with_md5(self, key: str) -> Tuple[str, str]:
+        return self.split_resources[self.split][key]
+
+    def _unzip_split(self) -> None:
+        """
+        Unzip files from `zip_filepath` to `root`.
+
+        Parameters
+        ----------
+        force : bool=False
+            If True, unzips all files even if they exist.
+        """
+
+        os.makedirs(self.root, exist_ok=True)
+
+        zip_filename, zip_md5 = self.resources["gzip"]
+        zip_filepath = os.path.join(self.root, zip_filename)
+
+        if not check_file_integrity(zip_filepath, zip_md5):
+            raise RuntimeError(
+                f"Zip file '{zip_filepath}' doesn't exists or its MD5"
+                "checksum is not valid. "
+                "Use EMNIST(download=True) or emnist.download() to download it"
+            )
+
+        for filename, md5 in self.split_resources[self.split].values():
+            filepath = os.path.join(self.root, filename)
+
+            if check_file_integrity(filepath, md5):
+                continue
+
+            extract_from_zip(zip_filepath, filename, self.root)
