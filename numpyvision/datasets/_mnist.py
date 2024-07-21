@@ -19,7 +19,7 @@ class MNIST(IdxDataset):
 
     Usage
     -----
-    >>> from numpyvision import MNIST
+    >>> from numpyvision.datasets import MNIST
     >>> mnist = MNIST()
     >>> type(mnist.train_images())
     <class 'numpy.ndarray'>
@@ -109,7 +109,7 @@ class FashionMNIST(IdxDataset):
 
     Usage
     -----
-    >>> from numpyvision import FashionMNIST
+    >>> from numpyvision.datasets import FashionMNIST
     >>> fmnist = FashionMNIST()
     >>> fmnist.train_images().dtype
     dtype('uint8')
@@ -183,7 +183,7 @@ class KMNIST(IdxDataset):
 
     Usage
     -----
-    >>> from numpyvision import KMNIST
+    >>> from numpyvision.datasets import KMNIST
     >>> kmnist = KMNIST()
     >>> kmnist.train_images().dtype
     dtype('uint8')
@@ -257,7 +257,7 @@ class K49(NpzDataset):
 
     Usage
     -----
-    >>> from numpyvision import K49
+    >>> from numpyvision.datasets import K49
     >>> k49 = K49()
     >>> k49.train_images().dtype
     dtype('uint8')

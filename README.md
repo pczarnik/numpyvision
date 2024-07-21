@@ -11,7 +11,7 @@ Each dataset stores train/test images as numpy arrays of shape `(n_samples, img_
 
 MNIST example:
 ```python
->>> from numpyvision import MNIST
+>>> from numpyvision.datasets import MNIST
 >>> mnist = MNIST()
 >>> type(mnist.train_images())
 <class 'numpy.ndarray'>
@@ -35,7 +35,7 @@ dtype('uint8')
 
 FashionMNIST example:
 ```python
-from numpyvision import FashionMNIST
+from numpyvision.datasets import FashionMNIST
 import matplotlib.pyplot as plt
 
 fmnist = FashionMNIST()
@@ -48,7 +48,7 @@ plt.show()
 
 EMNIST example
 ```python
-from numpyvision import EMNIST
+from numpyvision.datasets import EMNIST
 import matplotlib.pyplot as plt
 
 emnist = EMNIST()

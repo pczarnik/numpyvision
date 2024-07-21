@@ -15,7 +15,7 @@ class EMNIST(SplitDataset):
 
     Usage
     -----
-    >>> from numpyvision import EMNIST
+    >>> from numpyvision.datasets import EMNIST
     >>> emnist = EMNIST()
     >>> letters = emnist.Letters()
     >>> letters.train_images().dtype
@@ -65,7 +65,7 @@ class Balanced(ZippedDataset):
 
     Usage
     -----
-    >>> from numpyvision import EMNIST
+    >>> from numpyvision.datasets import EMNIST
     >>> emnist = EMNIST()
     >>> balanced = emnist.Balanced()
     >>> balanced.train_images().dtype
@@ -169,7 +169,7 @@ class ByClass(ZippedDataset):
 
     Usage
     -----
-    >>> from numpyvision import EMNIST
+    >>> from numpyvision.datasets import EMNIST
     >>> emnist = EMNIST()
     >>> byclass = emnist.ByClass()
     >>> byclass.train_images().dtype
@@ -288,7 +288,7 @@ class ByMerge(ZippedDataset):
 
     Usage
     -----
-    >>> from numpyvision import EMNIST
+    >>> from numpyvision.datasets import EMNIST
     >>> emnist = EMNIST()
     >>> bymerge = emnist.ByMerge()
     >>> bymerge.train_images().dtype
@@ -344,7 +344,7 @@ class Digits(ZippedDataset):
 
     Usage
     -----
-    >>> from numpyvision import EMNIST
+    >>> from numpyvision.datasets import EMNIST
     >>> emnist = EMNIST()
     >>> digits = emnist.Digits()
     >>> digits.train_images().dtype
@@ -411,7 +411,7 @@ class Letters(ZippedDataset):
 
     Usage
     -----
-    >>> from numpyvision import EMNIST
+    >>> from numpyvision.datasets import EMNIST
     >>> emnist = EMNIST()
     >>> letters = emnist.Letters()
     >>> letters.train_images().dtype
