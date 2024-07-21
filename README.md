@@ -1,9 +1,8 @@
-# MNISTs: All MNIST-like datasets in one package
+# numpyvision: Vision datasets as numpy arrays
 
-MNISTs provides an easy way to use MNIST and other MNIST-like datasets (FashionMNIST, KMNIST, EMNIST) in your numpy code.
+numpyvision provides an easy way to use vision datasets like MNIST and other MNIST-like datasets (FashionMNIST, KMNIST, EMNIST) in your numpy code.
 
-MNISTs replicates the functionality of `torchvision.datasets.mnist` without the need to download dozens of dependencies.
-MNISTs has only one dependency - `numpy`.
+numpyvision replicates the functionality of `torchvision.datasets.mnist` without the need to download dozens of dependencies - numpyvision has only one dependency: `numpy`.
 
 
 ## Usage
@@ -12,7 +11,7 @@ Each dataset stores train/test images as numpy arrays of shape `(n_samples, img_
 
 MNIST example:
 ```python
->>> from mnists import MNIST
+>>> from numpyvision import MNIST
 >>> mnist = MNIST()
 >>> type(mnist.train_images())
 <class 'numpy.ndarray'>
@@ -36,7 +35,7 @@ dtype('uint8')
 
 FashionMNIST example:
 ```python
-from mnists import FashionMNIST
+from numpyvision import FashionMNIST
 import matplotlib.pyplot as plt
 
 fmnist = FashionMNIST()
@@ -45,11 +44,11 @@ plt.title(fmnist.classes[fmnist.train_labels()[0]])
 plt.axis('off')
 plt.show()
 ```
-![FashionMNIST example](https://raw.githubusercontent.com/pczarnik/mnists/main/imgs/fmnist_boot.png)
+![FashionMNIST example](https://raw.githubusercontent.com/pczarnik/numpyvision/main/imgs/fmnist_boot.png)
 
 EMNIST example
 ```python
-from mnists import EMNIST
+from numpyvision import EMNIST
 import matplotlib.pyplot as plt
 
 emnist = EMNIST()
@@ -63,25 +62,25 @@ plt.imshow(
 plt.axis('off')
 plt.show()
 ```
-![EMNIST example](https://raw.githubusercontent.com/pczarnik/mnists/main/imgs/emnist_letters_256.png)
+![EMNIST example](https://raw.githubusercontent.com/pczarnik/numpyvision/main/imgs/emnist_letters_256.png)
 
 ## Installation
 
-Install `mnists` from [PyPi](https://pypi.org/project/mnists):
+Install `numpyvision` from [PyPi](https://pypi.org/project/numpyvision):
 ```
-pip install mnists
+pip install numpyvision
 ```
 or from source:
 ```
-pip install -U git+https://github.com/pczarnik/mnists
+pip install -U git+https://github.com/pczarnik/numpyvision
 ```
-The only requirements for MNISTs are `numpy>=1.22` and `python>=3.9`.
+The only requirements for numpyvision are `numpy>=1.22` and `python>=3.9`.
 
 If you want to have progress bars while downloading datasets, install with
 ```
-pip install mnists[tqdm]
+pip install numpyvision[tqdm]
 ```
 
 ## Acknowledgments
 
-The main inspirations for MNISTs were [`mnist`](https://github.com/datapythonista/mnist) and [`torchvision.datasets.mnist`](https://github.com/pytorch/vision).
+The main inspirations for numpyvision were [`mnist`](https://github.com/datapythonista/mnist) and [`torchvision.datasets.mnist`](https://github.com/pytorch/vision).

@@ -6,7 +6,7 @@ import numpy as np
 
 from .utils import check_file_integrity, download_file, extract_from_zip, read_idx_file
 
-TEMPORARY_DIR = os.path.join(tempfile.gettempdir(), "mnists")
+TEMPORARY_DIR = os.path.join(tempfile.gettempdir(), "numpyvision")
 
 
 class Dataset:

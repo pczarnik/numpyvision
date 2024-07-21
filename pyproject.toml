@@ -3,11 +3,11 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mnists"
+name = "numpyvision"
 authors = [
   { name="Piotr Czarnik", email="ptr.czarnik@gmail.com" },
 ]
-description = "MNISTs: All MNIST-like datasets in one package"
+description = "numpyvision: Vision datasets as numpy arrays"
 dynamic = ["version"]
 readme = "README.md"
 requires-python = ">=3.9"
@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pczarnik/mnists"
+Homepage = "https://github.com/pczarnik/numpyvision"
 
 [project.optional-dependencies]
 tqdm = [
@@ -36,7 +36,7 @@ tqdm = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "mnists.__version__"}
+version = {attr = "numpyvision.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["mnists"]
+include = ["numpyvision"]

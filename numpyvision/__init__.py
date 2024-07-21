@@ -1,5 +1,5 @@
 """
-MNISTs
+numpyvision
 ======
 
 Provides an easy access to MNIST-like datasets in a numpy format:
@@ -21,7 +21,7 @@ All arrays are of type ``uint8``.
 Example usage
 -------------
 
-  >>> from mnists import MNIST
+  >>> from numpyvision import MNIST
   >>> mnist = MNIST()
   >>> type(mnist.train_images())
   <class 'numpy.ndarray'>
