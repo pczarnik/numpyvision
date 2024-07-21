@@ -33,4 +33,4 @@ tqdm = ["tqdm"]
 version = {attr = "numpyvision.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["numpyvision"]
+include = ["numpyvision", "numpyvision.datasets"]
